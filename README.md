@@ -5,7 +5,7 @@
 **Features**  
 🕸️ **Spider Scanning:** Automatically discover all pages and endpoints in your web application by crawling through its structure, similar to how search engines index websites.  
 ⚔️ **Active Scanning:** Perform thorough security testing by sending various payloads to identify common vulnerabilities like SQL injection and XSS (Cross-Site Scripting).  
-📄 **Comprehensive Reports:** Generate detailed JSON reports that summarize the findings of both spider and active scans, providing actionable insights into your web application's security posture.  
+📄 **Comprehensive Reports:** Generate detailed Excelsheet(xlsx) reports that summarize the findings of both spider and active scans, providing actionable insights into your web application's security posture.  
 
 **Getting Started**
 1. Clone the Repository:  https://github.com/Saurabh3207/ZAP-Scan-Automator
