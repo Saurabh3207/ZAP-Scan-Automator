@@ -3,9 +3,9 @@ import openpyxl
 from openpyxl.styles import Font, Alignment
 from zapv2 import ZAPv2
 
-ZAP_API_KEY = 'Enter_Zap_API_Key_Here'
-#set the ZAP_PROXY variable to the proxy URL (e.g., http://localhost:8080) 
-ZAP_PROXY = 'http://localhost:port-no'
+# Hardcoded OWASP ZAP API key and proxy settings
+ZAP_API_KEY = '8aoe69a8tar5f8e5vmhfdfjg03'
+ZAP_PROXY = 'http://127.0.0.1:8090'
 
 def create_excel_report(alerts, output_file):
     # Create a workbook and select the active worksheet
@@ -39,7 +39,7 @@ def create_excel_report(alerts, output_file):
     # Adjust column widths
     for col in sheet.columns:
         max_length = 0
-        column = col[0].column_letter 
+        column = col[0].column_letter # Get the column name
         for cell in col:
             try:
                 if len(str(cell.value)) > max_length:
@@ -53,27 +53,32 @@ def create_excel_report(alerts, output_file):
     workbook.save(output_file)
     print(f'Report generated successfully: {output_file}')
 
-def run_spider_scan(target_url, zap, output_file):
+def run_zap_scan(target_url, output_file):
+    # Initialize OWASP ZAP instance
+    zap = ZAPv2(apikey=ZAP_API_KEY, proxies={'http': ZAP_PROXY, 'https': ZAP_PROXY})
+
+    # Spider the target URL to discover all pages and endpoints
     print(f'Spidering target URL: {target_url}')
     zap.spider.scan(target_url)
-    time.sleep(5) 
+    time.sleep(5)  # Delay to allow spidering to start
     while int(zap.spider.status()) < 100:
         print(f'Spider progress: {zap.spider.status()}%')
         time.sleep(5)
 
     print('Spidering completed.')
-    alerts = zap.core.alerts()
-    create_excel_report(alerts, output_file)
 
-def run_active_scan(target_url, zap, output_file):
+    # Perform active scanning to detect vulnerabilities
     print(f'Active scanning target URL: {target_url}')
     zap.ascan.scan(target_url)
-    time.sleep(5) 
+    time.sleep(5)  # Delay to allow active scanning to start
     while int(zap.ascan.status()) < 100:
         print(f'Active scan progress: {zap.ascan.status()}%')
         time.sleep(5)
 
     print('Active scanning completed.')
+
+    # Generate Excel report
+    print(f'Generating Excel report: {output_file}')
     alerts = zap.core.alerts()
     create_excel_report(alerts, output_file)
 
@@ -84,16 +89,4 @@ if __name__ == "__main__":
     if not output_file.endswith('.xlsx'):
         print("Error: Output file name must end with .xlsx")
     else:
-        zap = ZAPv2(apikey=ZAP_API_KEY, proxies={'http': ZAP_PROXY, 'https': ZAP_PROXY})
-
-        print("Choose scan type:")
-        print("1. Spider Scan")
-        print("2. Active Scan")
-        scan_choice = input("Enter your choice (1 or 2): ")
-
-        if scan_choice == '1':
-            run_spider_scan(target_url, zap, output_file)
-        elif scan_choice == '2':
-            run_active_scan(target_url, zap, output_file)
-        else:
-            print("Invalid choice. Please enter 1 or 2.")
+        run_zap_scan(target_url, output_file)
